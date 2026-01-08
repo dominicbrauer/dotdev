@@ -8,7 +8,7 @@ type Props = {
 const { width, height, heading } = Astro.props;
 ---
 
-<div class="card cflex" style=`width: ${width + "px" || "auto"}; height: ${height + "px" || "auto"};`>
+<div class="card cflex" style={`width: ${width ? `${width}px` : "auto"}; height: ${height ? `${height}px` : "auto"};`}>
 	{heading && (
 		<h2>{heading}</h2>
 	)}
