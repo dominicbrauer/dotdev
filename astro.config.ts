@@ -1,7 +1,7 @@
-import { defineConfig } from 'astro/config';
-import type { AstroIntegration } from 'astro';
-import node from '@astrojs/node';
-import db from '@astrojs/db';
+import { defineConfig } from "astro/config";
+import type { AstroIntegration } from "astro";
+import node from "@astrojs/node";
+import db from "@astrojs/db";
 
 /**
  * Takes care of excluded pages. In development,
@@ -9,21 +9,23 @@ import db from '@astrojs/db';
  * @returns the integration
  */
 function devRoutes(): AstroIntegration {
-  return {
-    name: 'dev-routes',
-    hooks: {
-      'astro:config:setup': (params) => {
-        if (params.command === 'dev') {
-			params.injectRoute(
-				{
-					pattern: '/_test',
-					entrypoint: './src/pages/_test/index.astro'
+	return {
+		name: "dev-routes",
+		hooks: {
+			"astro:config:setup": (params) => {
+				if (params.command === "dev") {
+					params.injectRoute({
+						pattern: "/_test",
+						entrypoint: "./src/pages/_test/index.astro",
+					});
+					params.injectRoute({
+						pattern: "/_playground",
+						entrypoint: "./src/pages/_playground/index.astro",
+					});
 				}
-			);
-        }
-      }
-    }
-  }
+			},
+		},
+	};
 }
 
 // const site = process.env.DOKPLOY_DEPLOY_URL
@@ -31,26 +33,23 @@ function devRoutes(): AstroIntegration {
 // 	: "https://dominicbrauer.dev";
 
 export default defineConfig({
-  site: "https://dominicbrauer.dev",
-  output: "server",
+	site: "https://dominicbrauer.dev",
+	output: "server",
 
-  devToolbar: {
-      enabled: false
+	devToolbar: {
+		enabled: false,
 	},
 
-  adapter: node({
-      mode: 'standalone'
+	adapter: node({
+		mode: "standalone",
 	}),
 
-  image: {
-    domains: [
-      "shared.fastly.steamstatic.com/",
-      "cdn.akamai.steamstatic.com"
-    ]
-  },
+	image: {
+		domains: [
+			"shared.fastly.steamstatic.com/",
+			"cdn.akamai.steamstatic.com",
+		],
+	},
 
-  integrations: [
-  	db(),
-   	devRoutes()
-  ]
+	integrations: [db(), devRoutes()],
 });

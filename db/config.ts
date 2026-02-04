@@ -13,49 +13,49 @@ const SpotifyWebAPICurrentSong = defineTable({
 	}
 });
 
-const SteamWebAPILastFetched = defineTable({
-	columns: {
-		id: column.number({ primaryKey: true }),
-		time: column.number()
-	}
-});
+// const SteamWebAPILastFetched = defineTable({
+// 	columns: {
+// 		id: column.number({ primaryKey: true }),
+// 		time: column.number()
+// 	}
+// });
 
-const SteamWebAPIPlayerOwnedGames = defineTable({
-	columns: {
-		appid: column.text({ primaryKey: true }),
-		name: column.text(),
-		playtime_forever: column.number()
-	}
-});
+// const SteamWebAPIPlayerOwnedGames = defineTable({
+// 	columns: {
+// 		appid: column.text({ primaryKey: true }),
+// 		name: column.text(),
+// 		playtime_forever: column.number()
+// 	}
+// });
 
-const SteamWebAPIAchievements = defineTable({
-	columns: {
-		id: column.text({ primaryKey: true }),
-		name: column.text(),
-		hidden: column.boolean(),
-		description: column.text({ optional: true }),
-		icon: column.text(),
-		icon_gray: column.text(),
-		achieved: column.boolean(),
-		unlock_time: column.number(),
-		appid: column.text()
-	}
-});
+// const SteamWebAPIAchievements = defineTable({
+// 	columns: {
+// 		id: column.text({ primaryKey: true }),
+// 		name: column.text(),
+// 		hidden: column.boolean(),
+// 		description: column.text({ optional: true }),
+// 		icon: column.text(),
+// 		icon_gray: column.text(),
+// 		achieved: column.boolean(),
+// 		unlock_time: column.number(),
+// 		appid: column.text()
+// 	}
+// });
 
-const SteamWebAPIGameCompleted = defineTable({
-	columns: {
-		appid: column.text({ primaryKey: true }),
-		complete: column.boolean()
-	}
-});
+// const SteamWebAPIGameCompleted = defineTable({
+// 	columns: {
+// 		appid: column.text({ primaryKey: true }),
+// 		complete: column.boolean()
+// 	}
+// });
 
-const SteamWebAPIGameLogoPositioning = defineTable({
-	columns: {
-		appid: column.text({ primaryKey: true }),
-		x: column.number({ optional: true }),
-		y: column.number({ optional: true })
-	}
-});
+// const SteamWebAPIGameLogoPositioning = defineTable({
+// 	columns: {
+// 		appid: column.text({ primaryKey: true }),
+// 		x: column.number({ optional: true }),
+// 		y: column.number({ optional: true })
+// 	}
+// });
 
 export default defineDb({
 	tables: {
