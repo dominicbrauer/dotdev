@@ -13,10 +13,6 @@ export interface ClientSpotifyResponse {
 }
 
 export const spotify = {
-
-	/**
-	 * Gets spotify song data.
-	 */
 	requestData: defineAction({
 		handler: async (): Promise<ClientSpotifyResponse> => {
 			const cachedData = CACHE.get<ClientSpotifyResponse>("spotify_db.entry");
@@ -67,7 +63,7 @@ export const spotify = {
 					data.song = JSON.stringify(currentlyPlayingResponse.item);
 					data.is_playing = currentlyPlayingResponse.is_playing;
 					data.progress_ms = currentlyPlayingResponse.progress_ms;
-					data.last_played = null;
+					data.last_played = 0;
 				}
 
 				data.fetched_at = currentUTC.getTime();

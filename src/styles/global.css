@@ -12,9 +12,6 @@
 	--bg: oklch(18% 1% 240);
 	--bg-dark: oklch(15% 1% 240);
 
-	--bg-skeleton1: oklch(40% 1% 240 / 0.5);
-	--bg-skeleton2: oklch(50% 1% 240 / 0.5);
-
 	--primary: oklch(45% 50% 30);
 	--secondary: ;
 
@@ -50,6 +47,14 @@
 	box-sizing: border-box;
 }
 
+h1, h2, h3, h4, h5, h6 {
+	color: var(--text);
+}
+
+h2 {
+	margin-bottom: var(--size-m);
+}
+
 svg, img {
 	user-select: none;
 }
@@ -77,21 +82,25 @@ a:hover {
 }
 
 .skeleton {
-	border-radius: var(--br-hard);
 	animation: skeleton-pulse 1s linear infinite alternate;
-	width: 100%;
-	height: 100%;
+	opacity: .7;
+	border-radius: var(--br-soft);
 }
 
-.skeleton-animation {
-	animation: skeleton-pulse 1s linear infinite alternate;
+.skeleton-text {
+	width: 100%;
+	height: 1em;
+}
+
+.skeleton-text:last-child {
+	width: 80%;
 }
 
 @keyframes skeleton-pulse {
 	from {
-		background-color: var(--bg-skeleton1);
+		background-color: oklch(35% 1% 240 / 0.5);
 	}
 	to {
-		background-color: var(--bg-skeleton2);
+		background-color: oklch(50% 1% 240 / 0.5);
 	}
 }

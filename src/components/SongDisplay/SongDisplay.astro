@@ -3,13 +3,21 @@ import { Image } from "astro:assets";
 import { actions } from "astro:actions";
 import { getFormatedTime } from "@/lib/helpers";
 import { DiscIcon, MicVocalIcon, SquarePauseIcon } from "@lucide/astro";
-import Timeline from "@/components/SongDisplay/Timeline.astro";
+import BlockIcon from "@/assets/icons/timeline_block.svg";
 
 const { data, error } = await Astro.callAction(actions.spotify.requestData, {});
+
+const realProgress = (() => {
+	if (!data?.progress_ms) {
+		return 0;
+	}
+	const calc = data.progress_ms + (Date.now() - data.fetched_at);
+	return Math.min(calc, data.song.duration_ms);
+})();
 ---
 
-{ (data && !error) ? (
-	<div class="song-display cflex" data-offline={!data.is_playing}>
+{data ? (
+	<div class="song-display cflex" data-online={data.is_playing}>
 		<div class="cover-wrapper">
 			<Image
 				class="song-cover"
@@ -26,18 +34,16 @@ const { data, error } = await Astro.callAction(actions.spotify.requestData, {});
 				</a>
 			</span>
 			<MicVocalIcon class="mic-svg" />
-			<div class="artists-wrapper">
-				<span>
-					{data.song.artists.map((artist, index) => (
-						<>
-							<a class="artist" href={artist.external_urls.spotify} target="_blank">
-								{artist.name}
-							</a>
-							{index < data.song.artists.length - 1 && <span> • </span>}
-						</>
-					))}
-				</span>
-			</div>
+			<span class="artists-wrapper">
+				{data.song.artists.map((artist, index) => (
+					<>
+						<a class="artist" href={artist.external_urls.spotify} target="_blank">
+							{artist.name}
+						</a>
+						{index < data.song.artists.length - 1 && <span> • </span>}
+					</>
+				))}
+			</span>
 			<DiscIcon class="disc-svg" />
 			<span class="album-wrapper">
 				<a href={data.song.album.external_urls.spotify} target="_blank">
@@ -49,34 +55,26 @@ const { data, error } = await Astro.callAction(actions.spotify.requestData, {});
 				{data.last_played ? `listened ${getFormatedTime(data.last_played)} ago` : "paused"}
 			</span>
 		</div>
-		<Timeline
-			progress={data.progress_ms}
-			duration={data.song.duration_ms}
-			fetched_at={data.fetched_at}
-		/>
-	</div>
-	) : (
-	<div class="song-display card cflex">
-		<div class="song-information-wrapper">
-			<span class="song-title">
-				SongDisplay failed!
-			</span>
-			<MicVocalIcon class="mic-svg" />
-			<div class="artists-wrapper">
-				<span>-</span>
+		<div class="timeline">
+			<div class="bar">
+				{Array.from({length: 32}).map(() => (
+					<BlockIcon class="block" />
+				))}
 			</div>
-			<DiscIcon class="disc-svg" />
-			<span class="album-wrapper">-</span>
-			<SquarePauseIcon class="pause-icon" />
-			<span class="last-played">-</span>
+			<div class="timecodes rflex">
+				<span data-progress_ms={realProgress} class="progress">0:00</span>
+				<span data-duration_ms={data.song.duration_ms} class="duration">0:00</span>
+			</div>
 		</div>
 	</div>
+) : (
+	<h2>SpotifyError</h2>
 )}
 
 <style>
 	@import url("@/styles/songDisplayAngle.css");
 
-	.song-display[data-offline="true"]:global(.song-display .timeline) {
+	.song-display[data-online="false"] .timeline {
 		display: none;
 	}
 
@@ -105,8 +103,8 @@ const { data, error } = await Astro.callAction(actions.spotify.requestData, {});
 		border: 2px solid var(--bg);
 	}
 
-	.song-display .cover-wrapper::after,
-	.song-display .cover-wrapper::before {
+	.cover-wrapper::after,
+	.cover-wrapper::before {
 		content: '';
 		position: absolute;
 		height: 100%;
@@ -120,8 +118,8 @@ const { data, error } = await Astro.callAction(actions.spotify.requestData, {});
 		animation: borderRotate 6s cubic-bezier(0.55, 0.25, 0.45, 0.75) infinite;
 	}
 
-	.song-display[data-offline="true"] .cover-wrapper::after,
-	.song-display[data-offline="true"] .cover-wrapper::before {
+	.song-display[data-online="false"] .cover-wrapper::after,
+	.song-display[data-online="false"] .cover-wrapper::before {
 		background-image: conic-gradient(from var(--angle), transparent 70%, var(--text-muted));
 		animation: borderRotate 12s cubic-bezier(0.55, 0.25, 0.45, 0.75) infinite;
 	}
@@ -152,10 +150,9 @@ const { data, error } = await Astro.callAction(actions.spotify.requestData, {});
 		grid-column-start: 1;
 	}
 
-	.artists-wrapper, .album-wrapper, .listened {
-		display: flex;
+	.artists-wrapper, .album-wrapper, .last-played {
 		grid-column-start: 2;
-		align-items: center;
+		align-content: center;
 	}
 
 	.song-information-wrapper svg {
@@ -165,43 +162,70 @@ const { data, error } = await Astro.callAction(actions.spotify.requestData, {});
 		width: auto;
 	}
 
-	.song-display .last-played {
+	.last-played {
 		font-style: italic;
-		display: flex;
-		align-items: center;
 	}
 
-	.song-display[data-offline="true"] .song-cover {
+	.song-display[data-online="false"] .song-cover {
 		filter: grayscale();
 	}
 
-	.song-display[data-offline="true"] .song-title a {
+	.song-display[data-online="false"] .song-title a {
 		color: var(--text-muted);
 	}
 
-	.song-display[data-offline="false"] .pause-icon,
-	.song-display[data-offline="false"] .last-played {
+	.song-display[data-online="true"] .pause-icon,
+	.song-display[data-online="true"] .last-played {
 		display: none;
+	}
+
+	.timeline .bar {
+		position: relative;
+		width: 100%;
+		height: var(--size-m);
+		border: 1px solid var(--border-muted);
+	}
+
+	.timeline .block {
+		position: absolute;
+		height: calc(var(--size-m) - 6px);
+		width: auto;
+		stroke: transparent;
+		fill: var(--primary);
+		top: 2px;
+		opacity: 0;
+		transition: opacity 500ms ease;
+	}
+
+	.timeline .timecodes {
+		justify-content: space-between;
+		font-size: .75em;
+		padding: var(--size-3xs);
 	}
 </style>
 
 <script>
-	import { getFormatedTime } from "@/lib/helpers";
+	import { formatSeconds, getFormatedTime } from "@/lib/helpers";
 	import { actions } from "astro:actions";
 
 	const songDisplay = document.querySelector<HTMLDivElement>('.song-display');
 	const songCover = document.querySelector<HTMLImageElement>('.song-display .song-cover');
 	const songTitle = document.querySelector<HTMLAnchorElement>('.song-display .song-title a');
-	const songArtistsWrapper = document.querySelector<HTMLSpanElement>('.song-display .artists-wrapper span');
+	const songArtistsWrapper = document.querySelector<HTMLSpanElement>('.song-display .artists-wrapper');
 	const songAlbum = document.querySelector<HTMLAnchorElement>('.song-display .album-wrapper a');
-	const lastPlayed = document.querySelector<HTMLSpanElement>('.last-played');
-	const timeLine = document.querySelector<HTMLDivElement>('.song-display .timeline');
+	const lastPlayedSpan = document.querySelector<HTMLSpanElement>('.last-played');
+
+	const blockElements = document.querySelectorAll<SVGElement>('.timeline .block');
+	const progressSpan = document.querySelector<HTMLSpanElement>('.progress');
+	const durationSpan = document.querySelector<HTMLSpanElement>('.duration');
+
+	let progress = new Date(Number(progressSpan?.dataset.progress_ms));
+	let duration = new Date(Number(durationSpan?.dataset.duration_ms));
 
 	/**
-	 * Updates the `SongDisplay` with
-	 * the newest data available.
+	 * Updates the SongDisplay with the newest data available.
 	 */
-	async function update() {
+	async function updateSongDisplay() {
 		const { data, error } = await actions.spotify.requestData();
 
 		if (error) {
@@ -209,17 +233,16 @@ const { data, error } = await Astro.callAction(actions.spotify.requestData, {});
 			return;
 		}
 
-		data.is_playing ? timeLine?.classList.remove('hidden') : timeLine?.classList.add('hidden');
+		// Timeline data
+		progress.setTime((() => {
+			if (!data?.progress_ms) return 0;
+			const calc = data.progress_ms + (Date.now() - data.fetched_at);
+			return Math.min(calc, data.song.duration_ms);
+		})());
+		duration.setTime(data.song.duration_ms);
+		durationSpan!.textContent = `${duration.getMinutes()}:${formatSeconds(duration.getSeconds())}`;
 
-		window.dispatchEvent(new CustomEvent('updateTimeline', {
-			detail: {
-				progress: data.progress_ms,
-				duration: data.song.duration_ms,
-				fetched_at: data.fetched_at
-			}
-		}));
-
-		songDisplay!.dataset.offline = String(!data.is_playing);
+		songDisplay!.dataset.online = String(data.is_playing);
 
 		songArtistsWrapper!.innerHTML = "";
 
@@ -249,8 +272,37 @@ const { data, error } = await Astro.callAction(actions.spotify.requestData, {});
 		songAlbum!.innerText = data.song.album.name;
 		songAlbum!.href = data.song.album.external_urls.spotify;
 
-		lastPlayed!.innerText = !!data.last_played ? `listened ${getFormatedTime(data.last_played)} ago` : "paused";
+		lastPlayedSpan!.innerText = !!data.last_played ? `listened ${getFormatedTime(data.last_played)} ago` : "paused";
 	}
 
-	window.setInterval(update, 30000);
+	/**
+	 * Updates the timeline block elements and progress counter.
+	 */
+	function updateTimeline() {
+		if (songDisplay!.dataset.online == "false") return;
+
+		const expectedBlockCount = Math.round(progress.getTime() / duration.getTime() * blockElements.length);
+
+		blockElements.forEach((block, index) => {
+			block.style.opacity = (index <= expectedBlockCount) ? '1' : '0';
+		});
+
+		// skip counting if song ends
+		if (duration.getTime() - progress.getTime() <= 500) {
+			return;
+		}
+
+		progress.setTime(progress.getTime() + 1000);
+		progressSpan!.textContent = `${progress.getMinutes()}:${formatSeconds(progress.getSeconds())}`;
+	}
+
+	blockElements.forEach((block, index) => {
+		block.style.left = `${index * 6 + 4}px`;
+		block.style.filter = `brightness(${0.4 + index * 0.025})`;
+	});
+
+	durationSpan!.textContent = `${duration.getMinutes()}:${formatSeconds(duration.getSeconds())}`;
+
+	window.setInterval(updateSongDisplay, 30000);
+	window.setInterval(updateTimeline, 1000);
 </script>
