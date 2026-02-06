@@ -18,10 +18,6 @@ function devRoutes(): AstroIntegration {
 						pattern: "/test",
 						entrypoint: "./src/pages/_test/index.astro",
 					});
-					params.injectRoute({
-						pattern: "/playground",
-						entrypoint: "./src/pages/_playground/index.astro",
-					});
 				}
 			},
 		},
