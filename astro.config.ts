@@ -15,11 +15,11 @@ function devRoutes(): AstroIntegration {
 			"astro:config:setup": (params) => {
 				if (params.command === "dev") {
 					params.injectRoute({
-						pattern: "/_test",
+						pattern: "/test",
 						entrypoint: "./src/pages/_test/index.astro",
 					});
 					params.injectRoute({
-						pattern: "/_playground",
+						pattern: "/playground",
 						entrypoint: "./src/pages/_playground/index.astro",
 					});
 				}
@@ -27,10 +27,6 @@ function devRoutes(): AstroIntegration {
 		},
 	};
 }
-
-// const site = process.env.DOKPLOY_DEPLOY_URL
-// 	? `https://${process.env.DOKPLOY_DEPLOY_URL}`
-// 	: "https://dominicbrauer.dev";
 
 export default defineConfig({
 	site: "https://dominicbrauer.dev",
