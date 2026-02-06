@@ -2,11 +2,14 @@
 import Main from "@/layouts/Main.astro";
 
 const searchParams = Astro.url.searchParams;
+const error = searchParams.get("error");
 ---
 
 <Main title="404">
 	<h1>Page not found</h1>
 	<p>The page you requested does not exist.</p>
 	<br>
-	<span>Error: {searchParams.get("error")}</span>
+	{error && (
+		<span>Error: {searchParams.get("error")}</span>
+	)}
 </Main>
