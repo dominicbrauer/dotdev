@@ -3,13 +3,9 @@ import GameCard from "@/components/Steam/GameCard.astro";
 import Main from "@/layouts/Main.astro";
 import SteamworksLogo from "@/assets/icons/steamworks.svg";
 import { steam } from "@/actions/steam";
-import type { SteamWebAPIPlayerOwnedGame } from "@/lib/steam/SteamWebAPI";
+import Card from "@/components/Card.astro";
 
 const { data: games, error } = await Astro.callAction(steam.getGames, {});
-
-
-
-// const games: SteamWebAPIPlayerOwnedGame[] = [];
 
 if (error) {
 	return Astro.redirect("/500?error=ACTION_ERROR");
@@ -28,7 +24,9 @@ if (error) {
 	</div>
 	<div class="games rflex">
 		{games?.sort((a, b) => b.playtime_forever - a.playtime_forever).map(async (game) => (
-			<GameCard game={game} />
+			<Card width={256}>
+				<GameCard game={game} />
+			</Card>
 		))}
 	</div>
 </Main>

@@ -18,101 +18,59 @@ const { data: achievementData, error } = await Astro.callAction(steam.getAchieve
 if (error) {
 	return Astro.redirect("/500?error=ACTION_ERROR");
 }
-
-const { achievements, complete } = achievementData;
 ---
 
-<a class="game-card" href=`/steam/${game.appid}`>
-	<div class="game-wrapper">
+<div class="game-card cflex">
+	<a href={`/steam/${game.appid}`}>
 		<Image
-			class="skeleton-animation"
 			src={SteamWebAPI.getGameImage(game.appid, "portrait")}
-			alt=`Game portrait header for ${game.name}.`
+			alt={`Game portrait header for ${game.name}.`}
 			loading="lazy"
 			width="600"
 			height="900"
-			onerror=`this.src="${portraitPlaceholder.src}";`
+			onerror={`this.src="${portraitPlaceholder.src}";`}
 		/>
-		<div class="title-card">
-			<h2 class:list={[complete && "golden"]}>{game.name}</h2>
-		</div>
-	</div>
-	{ complete && (
-		<div class="badge">
-			<AwardIcon />
-		</div>
-	)}
-</a>
+	</a>
+	<h2>
+		<a href={`/steam/${game.appid}`}>{game.name}</a>
+		{ achievementData.complete && (
+			<span class="badge cflex" title="All achievements">
+				<AwardIcon />
+			</span>
+		)}
+	</h2>
+</div>
 
 <style>
 	.game-card {
 		display: flex;
 		position: relative;
 		max-width: 256px;
+		gap: var(--size-s);
+		height: fit-content;
 	}
 
-	.game-wrapper {
-		position: relative;
-		display: flex;
-		overflow: hidden;
-		box-shadow:
-			0px -4px 16px -4px rgba(255, 255, 255, .1),
-			inset 0 0 8px 4px rgba(0, 0, 0, .5);
+	h2 {
+		margin: 0;
+		font-weight: 500;
+	}
+
+	h2 a {
+		color: var(--text);
 	}
 
 	img {
 		max-width: 100%;
 		height: auto;
-		transition: 250ms all ease;
-		z-index: -1;
-	}
-
-	.title-card {
-		position: absolute;
-		bottom: 0;
-		width: 100%;
-		height: fit-content;
-		transform: translateY(100%);
-		background: linear-gradient(0deg, oklch(15% 1% 240 / .5), oklch(21% 1% 240 / .5));
-		border-top: 1px solid var(--border-muted);
-		-webkit-backdrop-filter: blur(10px);
-		backdrop-filter: blur(10px);
-		padding: var(--size-s) var(--size-m);
-		transition: 250ms all ease;
-		z-index: 3;
-	}
-
-	h2 {
-		color: var(--text);
-		font-weight: 300;
-	}
-
-	h2.golden {
-		color: var(--warning);
-	}
-
-	.game-card:hover img {
-		filter: blur(2px);
-	}
-
-	.game-card:hover .title-card {
-		transform: translateY(0);
 	}
 
 	.badge {
-		display: flex;
-		position: absolute;
-		top: 0;
-		right: var(--size-s);
-		background-color: var(--bg-light);
-		border-bottom-left-radius: 100%;
-		border-bottom-right-radius: 100%;
-		padding: var(--size-xs);
-		box-shadow: 0px 2px 4px 2px rgba(0, 0, 0, 0.5);
+		display: inline-flex;
+		vertical-align: text-bottom;
+		margin-bottom: 2.5px;
 	}
 
 	.badge svg {
 		stroke: var(--warning);
-		margin-bottom: 2px; /* spacing correction */
 	}
 </style>
