@@ -9,7 +9,7 @@ type Props = {
 const { achievement } = Astro.props;
 ---
 
-<div class="achievement card rflex" title={achievement.description}>
+<div class="achievement rflex" title={achievement.description}>
 	<div class="image-info-wrapper rflex">
 		<Image
 			src={achievement.achieved ? achievement.icon : achievement.icon_gray}
@@ -20,13 +20,15 @@ const { achievement } = Astro.props;
 		/>
 		<div class="info cflex">
 			<span class:list={["name", achievement.achieved && "achieved"]}>{achievement.name}</span>
-			{!!achievement.description && (
+			{achievement.description && (
 				<p>{achievement.description}</p>
 			)}
 		</div>
 	</div>
 	{achievement.achieved && (
-		<span class="unlock-time">{new Date(achievement.unlock_time * 1000).toISOString()}</span>
+		<span class="unlock-time">
+			{new Date(achievement.unlock_time * 1000).toDateString()}
+		</span>
 	)}
 </div>
 
@@ -39,6 +41,7 @@ const { achievement } = Astro.props;
 		flex-wrap: wrap;
 		gap: var(--size-s);
 		align-items: center;
+		border: 1px solid var(--border);
 	}
 
 	.achievement:hover {

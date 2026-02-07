@@ -45,16 +45,16 @@ const logoPositioning = LOGO_POSITIONING.get(appid);
 			<Image
 				class="banner"
 				src={SteamWebAPI.getGameImage(game.appid, "library_hero")}
-				alt=`Game panorama header for ${game.name}.`
+				alt={`Game panorama header for ${game.name}.`}
 				width="1920"
 				height="620"
 				loading="eager"
-				onerror=`this.src="${headerPlaceholder.src}";`
+				onerror={`this.src="${headerPlaceholder.src}";`}
 			/>
 			<Image
 				class="logo"
 				src={SteamWebAPI.getGameImage(game.appid, "logo")}
-				alt=`Game logo for ${game.name}.`
+				alt={`Game logo for ${game.name}.`}
 				width="640"
 				height="160"
 				loading="eager"
@@ -89,11 +89,6 @@ const logoPositioning = LOGO_POSITIONING.get(appid);
 					<SteamworksLogo class="steamworks-logo" />
 				</a>
 			</div>
-			<div class="grid-toggle-wrapper rflex" title="Change layout">
-				<span>Layout</span>
-				<TableOfContentsIcon class="table-icon" />
-				<LayoutGridIcon class="grid-icon" />
-			</div>
 		</div>
 		<div class="achievements-wrapper cflex">
 			{achievements.length > 0 ? (
@@ -101,7 +96,7 @@ const logoPositioning = LOGO_POSITIONING.get(appid);
 					<Achievement achievement={achievement} />
 				))
 			) : (
-				<span>This game has no achievements.</span>
+				<span>There are no achievements for this game.</span>
 			)}
 		</div>
 	</section>
@@ -157,6 +152,7 @@ const logoPositioning = LOGO_POSITIONING.get(appid);
 	.hero-footer h1 {
 		font-size: clamp(1.25em, 6vw, 2em);
 		font-weight: 300;
+		margin: 0;
 	}
 
 	.hero-footer .game-infos {
@@ -184,6 +180,7 @@ const logoPositioning = LOGO_POSITIONING.get(appid);
 
 	h2 {
 		color: var(--text);
+		margin: 0;
 	}
 
 	.achievements-wrapper {
@@ -212,7 +209,7 @@ const logoPositioning = LOGO_POSITIONING.get(appid);
 		align-items: center;
 		margin-bottom: var(--size-xl);
 		flex-wrap: wrap;
-		gap: var(--size-m);
+		/*gap: var(--size-m);*/
 	}
 
 	.disclaimer {
@@ -276,12 +273,3 @@ const logoPositioning = LOGO_POSITIONING.get(appid);
 		}
 	}
 </style>
-
-<script>
-	const achievementSection = document.querySelector<HTMLDivElement>('.achievement-section')!;
-	const gridToggle = document.querySelector<HTMLDivElement>('.grid-toggle-wrapper');
-
-	gridToggle?.addEventListener('click', () => {
-		achievementSection.dataset.view = achievementSection.dataset.view === "table" ? "grid" : "table";
-	})
-</script>
